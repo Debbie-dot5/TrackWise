@@ -12,7 +12,6 @@ export default function SignUp() {
     
 
 
-  
     const {
         register, 
         handleSubmit, 

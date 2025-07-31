@@ -1,15 +1,19 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/utils/supabaseClient';
-import { useState } from 'react';
-import { signInSchema, SignInFormData } from '@/lib/schema';
+import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
-type SignInFields = z.infer<typeof signInSchema>;
+
+import { supabase } from '@/utils/supabaseClient';
+import { signInSchema, SignInFormData } from '@/lib/schema';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function SignInPage() {
   const {
@@ -21,71 +25,128 @@ export default function SignInPage() {
   });
 
   const router = useRouter();
-  const [authError, setAuthError] = useState('');
+  const [authError, setAuthError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const onSubmit = async (data: SignInFields) => {
-    setAuthError('');
+  const onSubmit = useCallback(
+    async (data: SignInFormData) => {
+      setAuthError('');
+      setIsLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
 
-    if (error) {
-      setAuthError(error.message);
-    } else {
-      router.push('/dashboard');  
-    }
-  };
+        if (error) {
+          setAuthError(error.message);
+        } else {
+          router.push('/dashboard');
+        }
+      } catch (err) {
+        setAuthError('An unexpected error occurred. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [router]
+  );
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-xl shadow space-y-6">
-      <h2 className="text-2xl font-semibold text-center">Sign In</h2>
+    <div className="flex items-center justify-center min-h-screen ">
+      <Card className="w-full max-w-md mx-auto shadow-lg rounded-xl bg-card text-card-foreground border border-border">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-bold text-foreground">Welcome Back! 👋</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Let&#39;s get you logged in and back to managing your money.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {authError && <p className="text-red-600 text-center text-sm">{authError}</p>}
 
-      {authError && <p className="text-red-600 text-center">{authError}</p>}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-foreground font-medium">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your.email@example.com"
+                {...register('email')}
+                className="py-2 px-4 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-primary bg-input text-foreground placeholder:text-muted-foreground transition-all duration-200 ease-in-out"
+                data-testid="email-input"
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1" data-testid="email-error">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium">Email</label>
-          <input
-            id="email"
-            type="email"
-            {...register('email')}
-            className="w-full border rounded px-3 py-2 mt-1"
-          />
-          {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-foreground font-medium">
+                Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Shhh... it's a secret! 🤫"
+                  {...register('password')}
+                  className="py-2 px-4 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-primary bg-input text-foreground placeholder:text-muted-foreground transition-all duration-200 ease-in-out pr-10"
+                  data-testid="password-input"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  data-testid="toggle-password"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1" data-testid="password-error">
+                  {errors.password.message}
+                </p>
+              )}
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-primary hover:text-vibrant-pink font-medium text-right block mt-2"
+                data-testid="forgot-password-link"
+              >
+                Forgot password?
+              </Link>
+            </div>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium">Password</label>
-          <input
-            id="password"
-            type="password"
-            {...register('password')}
-            className="w-full border rounded px-3 py-2 mt-1"
-          />
-          {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
-        </div>
+            <Button
+              type="submit"
+              className="w-full py-3 text-lg bg-purple-500 text-primary-foreground rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105"
+              disabled={isLoading}
+              data-testid="submit-button"
+            >
+              {isLoading ? 'Signing In...' : 'Sign In'}
+            </Button>
+          </form>
 
-      <Link href="/auth/forgot-password">
-      <button className='cursor-pointer text-blue-500 hover:underline'>
-          ForgotPassword
-        </button>
-      </Link>
-        
-
-        <button
-          type="submit"
-          className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
-        >
-          Sign In
-        </button>
-      </form>
-
-      <p className="text-center text-sm text-gray-600">
-        Don’t have an account?{' '}
-        <a href="/signup" className="text-blue-500 hover:underline">Sign up</a>
-      </p>
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            Don’t have an account?{' '}
+            <Link
+              href="/signup"
+              className="underline text-primary hover:text-vibrant-pink font-medium"
+              data-testid="signup-link"
+            >
+              Create one
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
