@@ -127,7 +127,7 @@ export default function SignInPage() {
 
             <Button
               type="submit"
-              className="w-full py-3 text-lg bg-purple-500 text-primary-foreground rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105"
+              className="w-full py-3 text-lg  text-primary-foreground rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105"
               disabled={isLoading}
               data-testid="submit-button"
             >
@@ -138,7 +138,7 @@ export default function SignInPage() {
           <div className="mt-4 text-center text-sm text-muted-foreground">
             Don’t have an account?{' '}
             <Link
-              href="/signup"
+              href="/auth/signup"
               className="underline text-primary hover:text-vibrant-pink font-medium"
               data-testid="signup-link"
             >

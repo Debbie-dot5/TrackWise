@@ -111,6 +111,52 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+
+
+@theme {
+  --color-dark-purple-bg: hsl(240 80% 8%);
+  --color-deep-purple-bg: hsl(240 80% 12%);
+  --color-vibrant-purple: hsl(260 80% 60%);
+  --color-vibrant-pink: hsl(330 80% 60%);
+  --color-vibrant-blue: hsl(200 80% 50%);
+  --color-vibrant-orange: hsl(30 80% 60%);
+  --color-light-text: hsl(210 40% 98%);
+  --color-muted-text: hsl(215 20.2% 65.1%);
+
+  /* shadcn/ui compatible colors */
+  --color-background: hsl(240 80% 8%);
+  --color-foreground: hsl(210 40% 98%);
+  --color-card: hsl(240 80% 12%);
+  --color-card-foreground: hsl(210 40% 98%);
+  --color-popover: hsl(240 80% 12%);
+  --color-popover-foreground: hsl(210 40% 98%);
+  --color-primary: hsl(260 80% 60%);
+  --color-primary-foreground: hsl(210 40% 98%);
+  --color-secondary: hsl(240 80% 20%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+  --color-muted: hsl(240 80% 20%);
+  --color-muted-foreground: hsl(215 20.2% 65.1%);
+  --color-accent: hsl(260 80% 60%);
+  --color-accent-foreground: hsl(210 40% 98%);
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-border: hsl(240 80% 20%);
+  --color-input: hsl(240 80% 20%);
+  --color-ring: hsl(260 80% 60%);
+
+  /* Chart colors */
+  --color-chart-1: hsl(260 80% 70%);
+  --color-chart-2: hsl(330 80% 70%);
+  --color-chart-3: hsl(40 80% 70%);
+  --color-chart-4: hsl(120 80% 50%);
+  --color-chart-5: hsl(200 80% 60%);
+  --color-chart-6: hsl(280 80% 80%);
+  --color-chart-7: hsl(10 80% 70%);
+
+  --radius: 0.5rem;
+}
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
