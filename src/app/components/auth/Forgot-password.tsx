@@ -5,6 +5,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/utils/supabaseClient';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
+
 
 const ForgotSchema = z.object({
   email: z.string().email(),
@@ -39,25 +46,40 @@ export default function ForgotPasswordPage() {
     }
   };
 
-  return (
-    <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-xl shadow space-y-4">
-      <h2 className="text-2xl font-bold text-center">Forgot Password</h2>
+  //shadow-lg rounded-xl bg-card text-card-foreground border border-border
 
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-dark-purple-bg to-deep-purple-bg p-4">
+      <Card className='w-full max-w-md mx-auto shadow-lg rounded-xl bg-card text-card-foreground border border-border'>
+        <CardHeader className="text-center relative pt-6">
+            <Link href="/auth/signin" className="absolute left-1 top-[-20] text-muted-foreground hover:text-primary">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <ChevronLeft className="h-5 w-5 " />
+                <span className="sr-only">Back to signin</span>
+              </Button>
+            </Link>
+          <CardTitle className="text-3xl font-bold text-foreground mt-2">Forgot Your Password? 🔑</CardTitle>
+          <CardDescription className="text-muted-foreground">No worries! Enter your email and we&#39;ll send you a reset link.</CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium">Email</label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-foreground font-medium">Email</Label>
+          <Input
             id="email"
             type="email"
+            placeholder="your.email@example.com"
             {...register('email')}
-            className="w-full border rounded px-3 py-2 mt-1"
+            className="py-2 px-4 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-primary bg-input text-foreground placeholder:text-muted-foreground transition-all duration-200 ease-in-out"
           />
           {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
 
         <button
           type="submit"
-          className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+          className="
+             w-full py-2 text-lg bg-vibrant-purple cursor-pointer text-primary-foreground rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105"
         >
           Reset Password
         </button>
@@ -65,6 +87,16 @@ export default function ForgotPasswordPage() {
 
       {message && <p className="text-green-600 text-center">{message}</p>}
       {err && <p className="text-red-600 text-center">{err}</p>}
+
+      <div className="mt-4 text-center text-sm text-muted-foreground">
+            Remembered your password?{" "}
+            <Link href="/auth/signin" className="underline text-primary hover:text-vibrant-pink font-medium">
+              Sign In
+            </Link>
+          </div>
+        </CardContent>
+
+      </Card>
     </div>
   );
 }
