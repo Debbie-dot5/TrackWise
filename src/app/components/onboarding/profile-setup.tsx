@@ -1,25 +1,41 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { OnboardingLayout } from "./onboarding-layout"
-import { useOnboardingStore } from "@/stores/onboarding-store"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { OnboardingLayout } from "./onboarding-layout";
+import { useOnboardingStore } from "@/stores/onboarding-store";
+import { ProfileForm, profileSchema } from "@/lib/schema";
 
-export  function ProfileSetup() {
-  
+export function ProfileSetup() {
   const { formData, updateFormData, nextStep } = useOnboardingStore();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (formData.name && formData.school && formData.age && formData.age > 0) {
-      nextStep()
-    } else {
-      alert("Oops! Please fill in all your details to continue. 😅")
-    }
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileForm>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: formData.name || "",
+      school: formData.school || "", // Added school to defaultValues
+      age: formData.age?.toString() || "", // Keep as string for input compatibility
+    },
+  });
+
+  const onSubmit = (data: ProfileForm) => {
+    // Update the store with validated data
+    updateFormData({
+      name: data.name,
+      school: data.school,
+      age: parseInt(data.age, 10), // Convert age back to number for store
+    });
+    nextStep();
+  };
 
   return (
     <OnboardingLayout
@@ -28,7 +44,7 @@ export  function ProfileSetup() {
       step={1}
       totalSteps={5}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name" className="text-foreground">
             Your Name
@@ -37,13 +53,14 @@ export  function ProfileSetup() {
             id="name"
             type="text"
             placeholder="e.g., Aisha Bello"
-            value={formData.name}
-            onChange={(e) => updateFormData({name: e.target.value})}
-            required
+            {...register("name")}
             className="py-2 px-4 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-primary bg-input text-foreground"
           />
+          {errors.name && (
+            <p className="text-red-500 text-sm">{errors.name.message}</p>
+          )}
         </div>
-        <div className="space-y-2">
+        <div className="space-y rumors2">
           <Label htmlFor="school" className="text-foreground">
             Your School
           </Label>
@@ -51,12 +68,12 @@ export  function ProfileSetup() {
             id="school"
             type="text"
             placeholder="e.g., University of Lagos"
-            value={formData.school}
-            onChange={(e) => updateFormData({school: e.target.value})}
-
-            required
+            {...register("school")}
             className="py-2 px-4 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-primary bg-input text-foreground"
           />
+          {errors.school && (
+            <p className="text-red-500 text-sm">{errors.school.message}</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="age" className="text-foreground">
@@ -66,13 +83,14 @@ export  function ProfileSetup() {
             id="age"
             type="number"
             placeholder="e.g., 20"
-            value={formData.age}
-            onChange={(e) => updateFormData({age: Number.parseInt(e.target.value) || "" })}
-            required
+            {...register("age")}
             min="16"
             max="99"
             className="py-2 px-4 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-primary bg-input text-foreground"
           />
+          {errors.age && (
+            <p className="text-red-500 text-sm">{errors.age.message}</p>
+          )}
         </div>
         <Button
           type="submit"
@@ -82,5 +100,5 @@ export  function ProfileSetup() {
         </Button>
       </form>
     </OnboardingLayout>
-  )
+  );
 }

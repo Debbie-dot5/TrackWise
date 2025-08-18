@@ -45,3 +45,19 @@ export const ResetPaswordschema = z.object({
 
 export type resetFields = z.infer<typeof ResetPaswordschema>;
 
+
+// profile setup schema
+
+export const profileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+   school: z.string().min(2, "School must be at least 2 characters"),
+  age: z
+    .string()
+    .min(1, "Age is required")
+    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+      message: "Age must be a valid number greater than 0",
+    }),
+});
+
+// Infer the form type from schema
+export type ProfileForm = z.infer<typeof profileSchema>;
