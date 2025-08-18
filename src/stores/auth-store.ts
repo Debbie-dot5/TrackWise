@@ -124,6 +124,7 @@ export const useAuthStore = create<AuthState>()(
 
           return { success: true }
         } catch (error) {
+          console.log(error)
           return { success: false, error: "An unexpected error occurred" }
         }
       },
