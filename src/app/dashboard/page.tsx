@@ -12,8 +12,8 @@ import { useExpenseStore } from "@/stores/expense-store"
 
 export default function DashboardPage() {
   const {
-    expenses,
-    budgetGoals,
+    //expenses,
+    //budgetGoals,
     categories,
     monthlyIncome,
     userName,
@@ -114,7 +114,7 @@ export default function DashboardPage() {
       <Card className="mb-6 shadow-lg rounded-xl bg-card text-card-foreground border border-border">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-foreground">
-            Hey {userName || "there"}, here's how your money's vibing 💸
+            Hey {userName || "there"}, here&apos;s how your money&apos;s vibing 💸
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

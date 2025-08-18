@@ -92,6 +92,7 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
 
       return { success: true }
     } catch (error) {
+      console.log(error)
       return { success: false, error: "An unexpected error occurred" }
     }
   },
@@ -111,6 +112,7 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
 
       return { success: true }
     } catch (error) {
+      console.log(error)
       return { success: false, error: "An unexpected error occurred" }
     }
   },
@@ -130,6 +132,7 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
 
       return { success: true }
     } catch (error) {
+      console.log(error)
       return { success: false, error: "An unexpected error occurred" }
     }
   },
@@ -189,6 +192,7 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
 
       return { success: true }
     } catch (error) {
+      console.log(error)
       return { success: false, error: "An unexpected error occurred" }
     }
   },
@@ -241,6 +245,7 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
 
       return { success: true }
     } catch (error) {
+      console.log(error)
       return { success: false, error: "An unexpected error occurred" }
     }
   },
@@ -288,6 +293,7 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
       set({ monthlyIncome: income })
       return { success: true }
     } catch (error) {
+      console.log(error)
       return { success: false, error: "An unexpected error occurred" }
     }
   },

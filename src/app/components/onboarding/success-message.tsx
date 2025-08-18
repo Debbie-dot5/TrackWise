@@ -43,7 +43,7 @@ export function SuccessSummary() {
     >
       <div className="space-y-6 text-center">
         <p className="text-lg text-foreground">
-          Hey <span className="font-bold text-primary">{formData.name}</span>, you're ready to roll!
+          Hey <span className="font-bold text-primary">{formData.name}</span>, you&apos;re ready to roll!
         </p>
         <div className="bg-secondary p-4 rounded-lg shadow-inner space-y-3">
           <h3 className="text-xl font-semibold text-foreground">Your Money Snapshot 📸</h3>

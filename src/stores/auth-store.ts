@@ -19,7 +19,7 @@ type AuthState = {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       loading: true,
 
@@ -58,6 +58,7 @@ export const useAuthStore = create<AuthState>()(
           set({ user: data.user, loading: false })
           return { success: true }
         } catch (error) {
+          console.log(error)
           set({ loading: false })
           return { success: false, error: "An unexpected error occurred" }
         }
@@ -82,6 +83,7 @@ export const useAuthStore = create<AuthState>()(
           set({ user: data.user, loading: false })
           return { success: true }
         } catch (error) {
+          console.log(error)
           set({ loading: false })
           return { success: false, error: "An unexpected error occurred" }
         }
@@ -105,6 +107,7 @@ export const useAuthStore = create<AuthState>()(
 
           return { success: true }
         } catch (error) {
+          console.log(error)
           return { success: false, error: "An unexpected error occurred" }
         }
       },

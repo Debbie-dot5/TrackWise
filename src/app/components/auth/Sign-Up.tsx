@@ -2,9 +2,8 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Eye, EyeOff, Chrome } from "lucide-react"
-import { useForm, SubmitHandler } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema, SignUpFormData } from "@/lib/schema"
 import { supabase } from "@/lib/supabase"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { is } from 'zod/locales';
 
 export default function SignInPage() {
 
@@ -22,14 +23,14 @@ const {signIn} = useAuthStore();
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
   });
 
   const router = useRouter();
-  const [authError, setAuthError] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  //const [authError, setAuthError] = useState<string>('');
+  //const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
 
@@ -81,7 +82,7 @@ const {signIn} = useAuthStore();
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {authError && <p className="text-red-600 text-center text-sm">{authError}</p>}
+          {errors && <p className="text-red-600 text-center text-sm">{errors.root?.message}</p>}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
@@ -145,10 +146,10 @@ const {signIn} = useAuthStore();
             <Button
               type="submit"
               className="w-full py-3 text-lg  text-primary-foreground rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105"
-              disabled={isLoading}
+              disabled={isSubmitting}
               data-testid="submit-button"
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isSubmitting ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
 
