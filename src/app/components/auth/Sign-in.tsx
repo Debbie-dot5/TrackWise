@@ -7,8 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
-
-import { supabase } from '@/utils/supabaseClient';
+import { useAuthStore } from '@/stores/auth-store';
 import { signInSchema, SignInFormData } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,9 +15,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 export default function SignInPage() {
+
+const {signIn} = useAuthStore();
+
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -29,30 +32,44 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const onSubmit = useCallback(
-    async (data: SignInFormData) => {
-      setAuthError('');
-      setIsLoading(true);
 
-      try {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: data.email,
-          password: data.password,
-        });
 
-        if (error) {
-          setAuthError(error.message);
-        } else {
-          router.push('/dashboard');
-        }
-      } catch (err) {
-        setAuthError('An unexpected error occurred. Please try again.');
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [router]
-  );
+
+
+  const onSubmit = async (data: SignInFormData) => {
+    const result = await signIn(data.email, data.password);
+    if (result.success){
+      router.push('/dashboard');
+    }else {
+      setError("root", {
+        message: result.error || "Login failed",
+      })
+  }
+  }
+  // const onSubmit = useCallback(
+  //   async (data: SignInFormData) => {
+  //     setAuthError('');
+  //     setIsLoading(true);
+
+  //     try {
+  //       const { error } = await supabase.auth.signInWithPassword({
+  //         email: data.email,
+  //         password: data.password,
+  //       });
+
+  //       if (error) {
+  //         setAuthError(error.message);
+  //       } else {
+  //         router.push('/dashboard');
+  //       }
+  //     } catch (err) {
+  //       setAuthError('An unexpected error occurred. Please try again.');
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   },
+  //   [router]
+  // );
 
   return (
     <div className="flex items-center justify-center min-h-screen ">

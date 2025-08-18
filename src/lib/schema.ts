@@ -22,3 +22,26 @@ export const signInSchema = z.object({
 });
 
 export type SignInFormData = z.infer<typeof signInSchema>;
+
+
+// forgot password schema
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+export type ForgotFields = z.infer<typeof ForgotPasswordSchema>;
+
+// Reset password schema
+
+export const ResetPaswordschema = z.object({
+
+  password: z.string().min(6),
+  confirmPassword: z.string().min(6),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
+
+});
+
+export type resetFields = z.infer<typeof ResetPaswordschema>;
+

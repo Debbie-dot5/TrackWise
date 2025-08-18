@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { supabase } from "@/utils/supabaseClient";
+import { supabase } from '@/lib/supabase';
 import { useRouter } from "next/navigation";
 
 export default function AuthCallbackPage() {
@@ -13,7 +13,7 @@ export default function AuthCallbackPage() {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         clearInterval(interval);
-        router.push("/setup-profile");
+        router.push("/welcome");
       } else if (++attempts > 10) {
         clearInterval(interval);
       }
@@ -28,3 +28,4 @@ export default function AuthCallbackPage() {
     </div>
   );
 }
+

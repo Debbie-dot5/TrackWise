@@ -1,0 +1,10 @@
+the goals to achieve this weeek
+- complete dashboard dashboard should have sidebar( logout , username like at the bottom)
+- edit budget 
+- add expense 
+- budget goals
+- money tips 
+- settings 
+- alerts 
+- history
+

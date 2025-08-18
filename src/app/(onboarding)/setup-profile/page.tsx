@@ -1,47 +1,32 @@
-"use client";
 
-import { supabase } from "@/utils/supabaseClient";
-import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+"use client"
 
-export default function Profile() {
-    const router = useRouter();
+import { ProfileSetup } from "@/app/components/onboarding/profile-setup"
+import { SelectCategories } from "@/app/components/onboarding/select-categories"
+import { SetBudgetGoals } from "@/app/components/onboarding/set-budget-goals"
+import { SetIncome } from "@/app/components/onboarding/set-income"
+import { SuccessSummary } from "@/app/components/onboarding/success-message"
+import { useOnboardingStore } from "@/stores/onboarding-store"
 
-    const signOut = useCallback(async () => {
-        const { error } = await supabase.auth.signOut();
-        if (!error) {
-            router.push("auth/signin");
-        } else {
-            alert("Sign out failed: " + error.message);
-        }
-    }, [router]);
+export default function OnboardingPage() {
+  const { currentStep } = useOnboardingStore();
 
-    return (
-        <>
-            <div>Welcome!</div>
-            <h1>Set up your profile</h1>
-            <button className="cursor-pointer" onClick={signOut}>Sign Out</button>
-        </>
-    );
+  const renderSteps = () => {
+    switch (currentStep) {
+      case 1: 
+        return <ProfileSetup />;
+      case 2: 
+        return <SetIncome />;
+      case 3: 
+        return <SelectCategories />;
+      case 4: 
+        return <SetBudgetGoals />;
+      case 5: 
+        return <SuccessSummary />;
+      default: 
+        return <ProfileSetup />;
+    }
+  }
+
+  return renderSteps();
 }
-
-// import { supabase } from "@/utils/supabaseClient";
-
-
-
-// export default function Profile() {
-
-//       const signOut = async () => {
-//         const { error } = await supabase.auth.signOut();
-//     };
-
-//     return (
-//         <>
-//         <div>Welcome! </div>
-//         <h1>Set up your profile</h1>
-        
-//         <button onClick={signOut}>SignOut</button>
-
-//         </>
-//     )
-// }

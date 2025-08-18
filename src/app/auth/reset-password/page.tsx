@@ -1,29 +1,26 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { supabase } from '@/utils/supabaseClient';
+import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
 import { Eye, EyeOff } from 'lucide-react';
-const schema = z.object({
-  password: z.string().min(6),
-});
-
-type Fields = z.infer<typeof schema>;
+import { resetFields, ResetPaswordschema } from '@/lib/schema';
+import { useAuthStore } from '@/stores/auth-store';
 
 export default function UpdatePasswordPage() {
+
+  const { updatePassword } = useAuthStore();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Fields>({ resolver: zodResolver(schema) });
+  } = useForm<resetFields>({ resolver: zodResolver(ResetPaswordschema) });
 
   const [msg, setMsg] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -31,16 +28,29 @@ export default function UpdatePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
-  const onSubmit = async (data: Fields) => {
-    const { error } = await supabase.auth.updateUser({ password: data.password });
 
-    if (error) {
-      setMsg('Error resetting password. Try again.');
-    } else {
+  const onSubmit = async (data: resetFields) => {
+    const result = await updatePassword(data.password);
+    if (result.success) {
       setMsg('Password updated! Redirecting...');
       setTimeout(() => router.push('/auth/signin'), 2000);
+    } else {
+      setMsg(result.error || 'An unexpected error occurred');
     }
-  };
+
+  }
+  
+
+  // const onSubmit = async (data: resetFields) => {
+  //   const { error } = await supabase.auth.updateUser({ password: data.password });
+
+  //   if (error) {
+  //     setMsg('Error resetting password. Try again.');
+  //   } else {
+  //     setMsg('Password updated! Redirecting...');
+  //     setTimeout(() => router.push('/auth/signin'), 2000);
+  //   }
+  // };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-zinc-950 to-zinc-700 p-4">

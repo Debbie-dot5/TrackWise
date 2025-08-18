@@ -7,7 +7,8 @@ import { Eye, EyeOff, Chrome } from "lucide-react"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema, SignUpFormData } from "@/lib/schema"
-import { supabase } from "@/utils/supabaseClient"
+import { supabase } from "@/lib/supabase"
+import { useAuthStore } from "@/stores/auth-store"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,6 +19,8 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  const {signUp} = useAuthStore()
+
   const {
     register,
     handleSubmit,
@@ -27,26 +30,53 @@ export default function SignUpPage() {
     resolver: zodResolver(signUpSchema),
   })
 
-  const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          emailRedirectTo: `${location.origin}/auth/callback`,
-        },
-      })
+  
 
-      if (error) throw new Error(error.message)
 
-      console.log("Signup successful:", data.email)
-    } catch (error: any) {
+
+  const onSubmit  = async (data: SignUpFormData) => {
+    const result = await signUp(data.email, data.password)
+    if (result.success) {
+      console.log("Signup successful, redirecting to onboarding...")
+      // Redirect to onboarding or dashboard
+    } else {
       setError("root", {
-        message: error.message || "Signup failed",
+        message: result.error || "Sign up failed",
       })
     }
   }
 
+  // const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
+
+  //   const result = await signUp(data.email, data.password)
+  //   if (result.success){
+  //     console.log("Signup successful, redirecting to onboarding...")
+  //   }else {
+  //     setError("root", {
+  //       message: result.error || "Sign up failed",
+  //     })
+  //   }
+    // try {
+    //   const { error } = await supabase.auth.signUp({
+    //     email: data.email,
+    //     password: data.password,
+    //     options: {
+    //       emailRedirectTo: `${location.origin}/auth/callback`,
+    //     },
+    //   })
+
+    //   if (error) throw new Error(error.message)
+
+    //   console.log("Signup successful:", data.email)
+    // } catch (error: any) {
+    //   setError("root", {
+    //     message: error.message || "Signup failed",
+    //   })
+    // }
+  
+
+
+ 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-dark-purple-bg to-deep-purple-bg p-4">
       <Card className="w-full max-w-md mx-auto shadow-lg rounded-xl bg-card">

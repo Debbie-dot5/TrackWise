@@ -2,49 +2,63 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { supabase } from '@/utils/supabaseClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { ForgotFields, ForgotPasswordSchema } from '@/lib/schema';
+import { useAuthStore } from '@/stores/auth-store';
 
 
-const ForgotSchema = z.object({
-  email: z.string().email(),
-});
-
-type ForgotFields = z.infer<typeof ForgotSchema>;
 
 export default function ForgotPasswordPage() {
+
+  const {resetPassword } = useAuthStore();
+
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ForgotFields>({
-    resolver: zodResolver(ForgotSchema),
+    resolver: zodResolver(ForgotPasswordSchema),
   });
 
   const [message, setMessage] = useState('');
   const [err, setErr] = useState('');
 
+
+
   const onSubmit = async (data: ForgotFields) => {
-    setMessage('');
-    setErr('');
-
-    const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: `${location.origin}/auth/reset-password`,
-    });
-
-    if (error) {
-      setErr(error.message);
-    } else {
+    const result  = await resetPassword(data.email);
+    if (result.success) {
       setMessage('Check your email to reset your password 📨');
+      
+      setErr('');
+    } else {
+      setErr(result.error || 'An unexpected error occurred');
+      setMessage('');
     }
-  };
+   
+  }
+
+  // const onSubmit = async (data: ForgotFields) => {
+  //   setMessage('');
+  //   setErr('');
+
+  //   const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+  //     redirectTo: `${location.origin}/auth/reset-password`,
+  //   });
+
+  //   if (error) {
+  //     setErr(error.message);
+  //   } else {
+  //     setMessage('Check your email to reset your password 📨');
+  //   }
+  // };
 
   //shadow-lg rounded-xl bg-card text-card-foreground border border-border
 
@@ -81,6 +95,7 @@ export default function ForgotPasswordPage() {
           className="
              w-full py-2 text-lg bg-vibrant-purple cursor-pointer text-primary-foreground rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105"
         >
+          {isSubmitting ? 'Sending...' : 'Reset Password'}
           Reset Password
         </button>
       </form>
