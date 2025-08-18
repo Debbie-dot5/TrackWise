@@ -1,27 +1,27 @@
-// import { type EmailOtpType } from '@supabase/supabase-js';
-// import { type NextRequest, NextResponse } from 'next/server';
-// import { createClient } from '@/utils/supabaseClient';
+// app/auth/callback/route.ts
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
 
-// export async function GET(request: NextRequest) {
-//   const { searchParams } = new URL(request.url);
-//   const token_hash = searchParams.get('token_hash');
-//   const type = searchParams.get('type') as EmailOtpType | null;
+export async function GET(request: NextRequest) {
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
 
-//   const redirectTo = request.nextUrl.clone();
-//   redirectTo.pathname = '/auth/callback';
-//   redirectTo.searchParams.delete('token_hash');
-//   redirectTo.searchParams.delete('type');
+  if (code) {
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
-//   if (token_hash && type) {
-//     const supabase = createClient();
-//     const { error } = await supabase.auth.verifyOtp({ token_hash, type });
+    try {
+      // Exchange the code for a session
+      await supabase.auth.exchangeCodeForSession(code);
 
-//     if (!error) {
-//       redirectTo.searchParams.set('status', 'success');
-//       return NextResponse.redirect(redirectTo);
-//     }
-//   }
+      // Redirect to a "verifying" page in the browser
+      return NextResponse.redirect(new URL("/auth/verifying", request.url));
+    } catch (error) {
+      console.error("Error exchanging code:", error);
+      return NextResponse.redirect(new URL("/auth/error", request.url));
+    }
+  }
 
-//   redirectTo.searchParams.set('status', 'error');
-//   return NextResponse.redirect(redirectTo);
-// }
+  return NextResponse.redirect(new URL("/auth/error", request.url));
+}
