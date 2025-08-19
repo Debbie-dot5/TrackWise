@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+
 import Link from 'next/link';
 
 import { useAuthStore } from '@/stores/auth-store';
@@ -34,11 +36,12 @@ const {signIn} = useAuthStore();
 
 
 
-
+ const notify = () => toast("You are signed In!");
 
   const onSubmit = async (data: SignInFormData) => {
     const result = await signIn(data.email, data.password);
     if (result.success){
+      notify()
       router.push('/dashboard');
     }else {
       setError("root", {
@@ -73,6 +76,7 @@ const {signIn} = useAuthStore();
 
   return (
     <div className="flex items-center justify-center min-h-screen ">
+      <ToastContainer/>
       <Card className="w-full max-w-md mx-auto shadow-lg rounded-xl bg-card text-card-foreground border border-border">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-foreground">Welcome Back! 👋</CardTitle>

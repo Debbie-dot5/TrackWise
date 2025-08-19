@@ -8,6 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema, SignUpFormData } from "@/lib/schema"
 import { supabase } from "@/lib/supabase"
 import { useAuthStore } from "@/stores/auth-store"
+import { ToastContainer, toast } from 'react-toastify';
+
+
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,14 +32,13 @@ export default function SignUpPage() {
     resolver: zodResolver(signUpSchema),
   })
 
-  
-
-
+  const notify = () => toast("Check your email for verification!");
 
   const onSubmit  = async (data: SignUpFormData) => {
     const result = await signUp(data.email, data.password)
     if (result.success) {
-      console.log("Signup successful, redirecting to onboarding...")
+      notify()
+      console.log("check email")
       // Redirect to onboarding or dashboard
     } else {
       setError("root", {
@@ -78,6 +80,7 @@ export default function SignUpPage() {
  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-dark-purple-bg to-deep-purple-bg p-4">
+      <ToastContainer/>
       <Card className="w-full max-w-md mx-auto shadow-lg rounded-xl bg-card">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-foreground">Join the Money Crew! 🎉</CardTitle>
