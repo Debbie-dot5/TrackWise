@@ -61,3 +61,13 @@ export const profileSchema = z.object({
 
 // Infer the form type from schema
 export type ProfileForm = z.infer<typeof profileSchema>;
+
+// add expense schema 
+export const addExpenseSchema = z.object({
+  amount: z.number().min(0.01, "Amount must be greater than 0"),
+  category: z.string().min(1, "Please select a category"),
+  note: z.string().optional(),
+  date: z.date(),
+})
+
+export type AddExpenseFormData = z.infer<typeof addExpenseSchema>
