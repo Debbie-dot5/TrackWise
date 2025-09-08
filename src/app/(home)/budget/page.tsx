@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { addExpenseSchema, AddExpenseFormData, addCategorySchema, AddCategoryFormData, editExpenseSchema, EditExpenseFormData } from "@/lib/schema"
+import { addExpenseSchema, AddExpenseFormData, editExpenseSchema, EditExpenseFormData } from "@/lib/schema"
 import { useExpenseStore } from "@/stores/expense-store"
 import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
@@ -12,24 +12,21 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-//import { useToast } from "@/components/ui/use-toast"
 import { format, parse } from "date-fns"
 import { Pencil, Trash2 } from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 
 export default function BudgetExpensesPage() {
-  const { categories, expenses, loading, fetchCategories, fetchExpenses, addCategory, addExpense, updateExpense, deleteExpense } = useExpenseStore()
- // const { toast } = useToast()
+  const { categories, expenses, loading, fetchCategories, fetchExpenses, addExpense, updateExpense, deleteExpense } = useExpenseStore()
+
 
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false)
-  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false)
   const [isEditExpenseOpen, setIsEditExpenseOpen] = useState(false)
-  const [editingExpense, setEditingExpense] = useState<EditExpenseFormData | null>(null)
+  const [, setEditingExpense] = useState<EditExpenseFormData | null>(null)
 
   // Forms
   const expenseForm = useForm<AddExpenseFormData>({ resolver: zodResolver(addExpenseSchema), defaultValues: { amount: 0, category: "", note: "", date: new Date() } })
   const editExpenseForm = useForm<EditExpenseFormData>({ resolver: zodResolver(editExpenseSchema), defaultValues: { id: "", amount: 0, category: "", note: "", date: new Date() } })
-  const categoryForm = useForm<AddCategoryFormData>({ resolver: zodResolver(addCategorySchema), defaultValues: { name: "", emoji: "✨" } })
 
   // Fetch data and set up subscriptions
   useEffect(() => {
@@ -64,7 +61,13 @@ export default function BudgetExpensesPage() {
   }, [fetchCategories, fetchExpenses])
 
 
-    const notify = () => toast("Check your email for verification!");
+  // Inform user if no categories available
+  useEffect(() => {
+    if (!loading && categories.length === 0) {
+      toast.info('No categories yet. Add one to start!', { toastId: 'no-categories-budget' })
+    }
+  }, [loading, categories.length])
+
   // Handlers
   const handleAddExpense = async (data: AddExpenseFormData) => {
     const { success, error } = await addExpense({
@@ -76,9 +79,9 @@ export default function BudgetExpensesPage() {
     if (success) {
       expenseForm.reset()
       setIsAddExpenseOpen(false)
-      //toast({ title: "Success", description: "Expense added! 🎉" })
+      toast.success('Expense added! 🎉')
     } else {
-      //toast({ title: "Error", description: error || "Failed to add expense", variant: "destructive" })
+      toast.error(error || 'Failed to add expense')
     }
   }
 
@@ -93,34 +96,18 @@ export default function BudgetExpensesPage() {
       editExpenseForm.reset()
       setIsEditExpenseOpen(false)
       setEditingExpense(null)
-      //toast({ title: "Success", description: "Expense updated! 🎉" })
+      toast.success('Expense updated! 🎉')
     } else {
-      //toast({ title: "Error", description: error || "Failed to update expense", variant: "destructive" })
+      toast.error(error || 'Failed to update expense')
     }
   }
 
   const handleDeleteExpense = async (id: string) => {
     const { success, error } = await deleteExpense(id)
     if (success) {
-     // toast({ title: "Success", description: "Expense deleted! 🗑️" })
+      toast.success('Expense deleted! 🗑️')
     } else {
-      //toast({ title: "Error", description: error || "Failed to delete expense", variant: "destructive" })
-    }
-  }
-
-  const handleAddCategory = async (data: AddCategoryFormData) => {
-    if (categories.some((cat) => cat.name.toLowerCase() === data.name.toLowerCase())) {
-      categoryForm.setError("name", { message: "Category name already exists" })
-      return
-    }
-    const { success, error } = await addCategory(data.name, data.emoji)
-    if (success) {
-      categoryForm.reset({ name: "", emoji: "✨" })
-      setIsAddCategoryOpen(false)
-     // toast({ title: "Success", description: "Category added! 🎉" })
-    } else {
-      //toast({ title: "Error", description: error || "Failed to add category", variant: "destructive" })
-      console.log(error, "unable to add category")
+      toast.error(error || 'Failed to delete expense')
     }
   }
 

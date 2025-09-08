@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { supabase } from "@/lib/supabase"
-import type { User } from "@supabase/supabase-js"
+import type { User, AuthError } from "@supabase/supabase-js"
 
 type AuthState = {
   user: User | null
@@ -10,7 +10,7 @@ type AuthState = {
   // Actions
   signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  signOut: () => Promise<{error: any}>
+  signOut: () => Promise<{ error: AuthError | null }>
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>
   updatePassword: (newPassword: string) => Promise<{ success: boolean; error?: string }>
   setUser: (user: User | null) => void

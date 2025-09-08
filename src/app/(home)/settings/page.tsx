@@ -53,7 +53,8 @@ export default function SettingsPage() {
     if (success) {
       console.log("name updated successfully")
     } else {
-     // toast({ title: "Error", description: error || "Failed to update profile", variant: "destructive" })
+      console.log(error || "Failed to update profile")
+     
     }
   }
 
