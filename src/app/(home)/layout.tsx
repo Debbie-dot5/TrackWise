@@ -106,13 +106,22 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
            variant="ghost"
            className="fixed top-4 left-4 z-50 text-foreground bg-card/80 rounded-full"
            onClick={() => setIsSidebarOpen(true)}
+           aria-label="Open menu"
          >
            <Menu className="h-6 w-6" />
          </Button>
-         
          {isSidebarOpen && (
-           <div className="fixed inset-0 bg-black/50 z-40 flex">
-             <Card className="w-64 bg-card border-r border-border p-4">
+           <div
+             className="fixed inset-0 bg-black/50 z-40 flex"
+             role="dialog"
+             aria-modal="true"
+             aria-label="Navigation menu"
+             onKeyDown={(e) => { if (e.key === 'Escape') setIsSidebarOpen(false) }}
+           >
+             <Card
+               className="w-64 bg-card border-r border-border p-4 transform transition-transform duration-200 will-change-transform"
+               style={{ transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}
+             >
                <div className="flex justify-between items-center mb-4">
                  <Link
                    href="/"
@@ -124,25 +133,30 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
                    variant="ghost"
                    className="text-foreground hover:bg-primary/10 rounded-full"
                    onClick={() => setIsSidebarOpen(false)}
+                   aria-label="Close menu"
                  >
                    <X className="h-6 w-6" />
                  </Button>
                </div>
                <div className="flex flex-col gap-2">
-                 {navItems.map((item) => (
-                   <Link
-                     key={item.href}
-                     href={item.href}
-                     onClick={() => setIsSidebarOpen(false)}
-                   >
-                     <Button
-                       variant="ghost"
-                       className="w-full justify-start text-foreground hover:bg-primary/10 rounded-lg transition-all duration-200"
+                 {navItems.map((item) => {
+                   const isActive = path === item.href;
+                   return (
+                     <Link
+                       key={item.href}
+                       href={item.href}
+                       onClick={() => setIsSidebarOpen(false)}
                      >
-                       {item.emoji} {item.label}
-                     </Button>
-                   </Link>
-                 ))}
+                       <Button
+                         variant="ghost"
+                         className={`w-full justify-start ${isActive ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-primary/10'} rounded-lg transition-all duration-200`}
+                         aria-current={isActive ? 'page' : undefined}
+                       >
+                         {item.emoji} {item.label}
+                       </Button>
+                     </Link>
+                   );
+                 })}
                  <Button
                    variant="ghost"
                    className="w-full justify-start text-destructive hover:bg-destructive/10 rounded-lg transition-all duration-200"
