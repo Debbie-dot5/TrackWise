@@ -1,13 +1,17 @@
 import { create } from "zustand"
 import { supabase } from "@/lib/supabase"
-import type { Expense, BudgetGoal, Category } from "@/lib/types"
+import type { Expense, BudgetGoal, Category, UserProfile } from "@/lib/types"
+
+
+
 
 interface ExpenseState {
   expenses: Expense[]
   budgetGoals: BudgetGoal[]
   categories: Category[]
   monthlyIncome: number
-  userName: string
+  //userName: string
+  profile: UserProfile | null
   loading: boolean
 
   // Actions
@@ -22,7 +26,8 @@ interface ExpenseState {
   fetchCategories: () => Promise<void>
   addCategory: (name: string, emoji: string) => Promise<{ success: boolean; error?: string }>
 
-  fetchUserProfile: () => Promise<void>
+ fetchUserProfile: () => Promise<{ success: boolean; error?: string }>
+  updateUserProfile: (updates: Partial<UserProfile>) => Promise<{ success: boolean; error?: string }>
   updateMonthlyIncome: (income: number) => Promise<{ success: boolean; error?: string }>
 
   // Computed values
@@ -36,7 +41,8 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
   budgetGoals: [],
   categories: [],
   monthlyIncome: 0,
-  userName: "",
+  //userName: "",
+  profile: null,
   loading: false,
 
   fetchExpenses: async () => {
@@ -243,6 +249,9 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
         categories: [...state.categories, data],
       }))
 
+      // Ensure server truth sync for any row-level transforms/defaults
+      await get().fetchCategories()
+
       return { success: true }
     } catch (error) {
       console.log(error)
@@ -255,27 +264,63 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
       const {
         data: { user },
       } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user) return { success: false, error: "No user logged in" }
 
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("name, monthly_income")
+        .select("id, name, email, school, age, monthly_income, created_at")
         .eq("id", user.id)
         .single()
 
       if (error) {
         console.error("Error fetching user profile:", error)
-        return
+        
+        return { success: false, error: "Error fetching user profile" }
       }
 
-      set({
-        userName: data?.name || "",
-        monthlyIncome: data?.monthly_income || 0,
-      })
+      set({ profile: data, monthlyIncome: data?.monthly_income ?? 0 })
+      return { success: true }
     } catch (error) {
       console.error("Error fetching user profile:", error)
+      return { success: false, error: "Error fetching user profile" }
     }
   },
+
+
+
+  updateUserProfile: async (updates) => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "No user found" }
+
+    const { error } = await supabase
+      .from("user_profiles")
+      .update(updates)
+      .eq("id", user.id)
+
+    if (error) {
+      console.error("Error updating profile:", error)
+      return { success: false, error: "Error updating" }
+    }
+
+    // Update local store immediately and keep monthlyIncome in sync
+     set((state) => ({
+        profile: state.profile ? { ...state.profile, ...updates } : state.profile,
+        monthlyIncome: typeof updates.monthly_income === 'number' ? updates.monthly_income : state.monthlyIncome,
+      }))
+
+    return { success: true }
+  } catch (err) {
+    console.error("Unexpected error updating profile:", err)
+    return { success: false, error: "Unexpected error" }
+  }
+},
+
+
+
+
 
   updateMonthlyIncome: async (income) => {
     try {
@@ -297,6 +342,8 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
       return { success: false, error: "An unexpected error occurred" }
     }
   },
+
+  
 
   getTotalSpent: () => {
     const { expenses } = get()

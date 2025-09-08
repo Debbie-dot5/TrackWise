@@ -52,7 +52,7 @@ export function ProfileSetup() {
           <Input
             id="name"
             type="text"
-            placeholder="e.g., Aisha Bello"
+            placeholder="e.g., Umoh Deborah"
             {...register("name")}
             className="py-2 px-4 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-primary bg-input text-foreground"
           />

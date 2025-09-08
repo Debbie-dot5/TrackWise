@@ -35,3 +35,11 @@ export type  Category ={
   emoji: string
   created_at: string
 }
+
+
+// export type  Name = {
+//   id: string
+//   name: string
+//   monthlyIncome: number
+
+// }

@@ -34,12 +34,14 @@ export default function SignUpPage() {
 
   const notify = () => toast("Check your email for verification!");
 
+
   const onSubmit  = async (data: SignUpFormData) => {
     const result = await signUp(data.email, data.password)
     if (result.success) {
       notify()
       console.log("check email")
       // Redirect to onboarding or dashboard
+      // if user exist, prompt them to signin else check email
     } else {
       setError("root", {
         message: result.error || "Sign up failed",

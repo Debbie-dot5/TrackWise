@@ -10,7 +10,7 @@ type AuthState = {
   // Actions
   signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  signOut: () => Promise<void>
+  signOut: () => Promise<{error: any}>
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>
   updatePassword: (newPassword: string) => Promise<{ success: boolean; error?: string }>
   setUser: (user: User | null) => void
@@ -38,6 +38,8 @@ export const useAuthStore = create<AuthState>()(
             set({ loading: false })
             return { success: false, error: error.message }
           }
+
+          // check if userid already exist, if true, alert the user you already have an account, redirect to signin to signin
 
           // Create minimal user profile - details will be filled during onboarding
           // if (data.user) {
@@ -89,11 +91,18 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      signOut: async () => {
-        set({ loading: true })
-        await supabase.auth.signOut()
-        set({ user: null, loading: false })
-      },
+      // signOut: async () => {
+      //   set({ loading: true })
+      //     const {error} = await supabase.auth.signOut()
+      //   //await supabase.auth.signOut()
+      //   set({ user: null, loading: false })
+      //   return {error}
+      // },
+
+       signOut: async () => {
+      const { error } = await supabase.auth.signOut()
+      return { error }
+     },
 
       resetPassword: async (email) => {
         try {
