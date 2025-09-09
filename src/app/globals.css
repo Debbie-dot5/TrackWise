@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -111,8 +110,6 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-
-
  @theme {
   --color-dark-purple-bg: hsl(240 80% 8%);
   --color-deep-purple-bg: hsl(240 80% 12%);
@@ -143,7 +140,6 @@
   --color-input: hsl(240 80% 20%);
   --color-ring: hsl(260 80% 60%);
 
-  
   --color-chart-1: hsl(260 80% 70%);
   --color-chart-2: hsl(330 80% 70%);
   --color-chart-3: hsl(40 80% 70%);
@@ -152,11 +148,18 @@
   --color-chart-6: hsl(280 80% 80%);
   --color-chart-7: hsl(10 80% 70%);
 
+  /* Sidebar customization to match app design */
+  --color-sidebar: hsl(240 80% 12%);
+  --color-sidebar-foreground: hsl(210 40% 98%);
+  --color-sidebar-primary: hsl(260 80% 60%);
+  --color-sidebar-primary-foreground: hsl(210 40% 98%);
+  --color-sidebar-accent: hsl(240 80% 20%);
+  --color-sidebar-accent-foreground: hsl(210 40% 98%);
+  --color-sidebar-border: hsl(240 80% 20%);
+  --color-sidebar-ring: hsl(260 80% 60%);
+
   --radius: 0.5rem;
 } 
-
-
-
 
 @layer base {
   * {
